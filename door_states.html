@@ -1,0 +1,43 @@
+<p id="doorstates-array" hidden>
+  <span id="haustuer">{zigbee.0.00158d000252beac.isopen}</span>
+  <span id="terassentuer">{zigbee.0.00158d000242443b.isopen}</span>
+  <span id="kellertuer">{zigbee.0.00158d000252be99.isopen}</span>
+  <span id="schlafzimmerfenster">{zigbee.0.00158d0002519669.isopen}</span>
+</p>
+
+<table style="width:100%;padding:0 10px;" class="">
+  <tbody id="hmTableBody">
+  </tbody>
+</table>
+
+<script>
+var _01 = document.getElementById("haustuer").innerHTML;
+var _02 = document.getElementById("terassentuer").innerHTML;
+var _03 = document.getElementById("kellertuer").innerHTML;
+var _04 = document.getElementById("schlafzimmerfenster").innerHTML;
+
+generateHeadline("TÜREN");
+generateLine("Haustür", _01);
+generateLine("Terassentür", _02);
+generateLine("Kellertür", _03);
+generateHeadline("FENSTER");
+generateLine("Schlafzimmer", _04);
+
+
+function generateLine(room, state){
+  if (state == "true") {
+    state = '<span style="color: red;">OFFEN</span>';
+  } else {
+    state = '<span style="color: green;">GESCHLOSSEN</span>';
+  }
+  var x = document.createElement("tr");
+  x.innerHTML = "<td>" + room + '</td><td style="text-align: right;">' + state + "</td>"
+  document.getElementById("hmTableBody").appendChild(x);
+}
+
+function generateHeadline (text) {
+  var x = document.createElement("tr");
+  x.innerHTML = '<td colspan="2" style="padding-top:10px;"><b>'+ text +'</b></td>';
+  document.getElementById("hmTableBody").appendChild(x);
+}
+</script>

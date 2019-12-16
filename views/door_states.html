@@ -1,28 +1,41 @@
 <p id="doorstates-array" hidden>
-  <span id="haustuer">{zigbee.0.00158d000252beac.isopen}</span>
-  <span id="terassentuer">{zigbee.0.00158d000242443b.isopen}</span>
-  <span id="kellertuer">{zigbee.0.00158d000252be99.isopen}</span>
-  <span id="schlafzimmerfenster">{zigbee.0.00158d0002519669.isopen}</span>
+  <span id="doorState1">{zigbee.0.00158d000252beac.opened}</span>
+  <span id="doorState2">{zigbee.0.00158d000252be99.opened}</span>
+  <span id="doorState3">{zigbee.0.00158d0002519669.opened}</span>
+  <span id="doorState4">{zigbee.0.00158d000420a059.opened}</span>
+  <span id="doorState5">{zigbee.0.00158d00044469db.opened}</span>
+  <span id="doorState6">{zigbee.0.00158d000242443b.opened}</span>
 </p>
 
-<table style="width:100%;padding:0 10px;" class="">
-  <tbody id="hmTableBody">
+<table style="width:100%; padding:10px; color:white; font-weight: 600;" class="">
+  <tbody id="doorStatesTableBody">
   </tbody>
 </table>
 
 <script>
-var _01 = document.getElementById("haustuer").innerHTML;
-var _02 = document.getElementById("terassentuer").innerHTML;
-var _03 = document.getElementById("kellertuer").innerHTML;
-var _04 = document.getElementById("schlafzimmerfenster").innerHTML;
+var doorState1 = document.getElementById("doorState1").innerHTML;
+var doorState2 = document.getElementById("doorState2").innerHTML;
+var doorState3 = document.getElementById("doorState3").innerHTML;
+var doorState4 = document.getElementById("doorState4").innerHTML;
+var doorState5 = document.getElementById("doorState5").innerHTML;
+var doorState6 = document.getElementById("doorState6").innerHTML;
 
-generateHeadline("TÜREN");
-generateLine("Haustür", _01);
-generateLine("Terassentür", _02);
-generateLine("Kellertür", _03);
+generateHeadline("Türen");
+
+generateLine("Haustür", doorState1);
+generateLine("Terassentür", doorState6);
+generateLine("Kellertür", doorState5);
+generateEmpty();
 generateHeadline("FENSTER");
-generateLine("Schlafzimmer", _04);
+generateLine("Schlafzimmer", doorState3);
+generateLine("d4", doorState4);
+generateLine("d2", doorState2);
 
+function generateEmpty () {
+  var x = document.createElement("tr");
+  x.innerHTML = '<td colspan="2" style="height: 20px"> </td>';
+  document.getElementById("doorStatesTableBody").appendChild(x);
+}
 
 function generateLine(room, state){
   if (state == "true") {
@@ -32,12 +45,12 @@ function generateLine(room, state){
   }
   var x = document.createElement("tr");
   x.innerHTML = "<td>" + room + '</td><td style="text-align: right;">' + state + "</td>"
-  document.getElementById("hmTableBody").appendChild(x);
+  document.getElementById("doorStatesTableBody").appendChild(x);
 }
 
 function generateHeadline (text) {
   var x = document.createElement("tr");
-  x.innerHTML = '<td colspan="2" style="padding-top:10px;"><b>'+ text +'</b></td>';
-  document.getElementById("hmTableBody").appendChild(x);
+  x.innerHTML = '<td colspan="2" style="font-size: 1.5em;"><strong>'+ text + '</strong></td>';
+  document.getElementById("doorStatesTableBody").appendChild(x);
 }
 </script>

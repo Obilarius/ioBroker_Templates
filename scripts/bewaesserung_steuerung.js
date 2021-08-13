@@ -1,28 +1,56 @@
-const BodenfeuchteSensorObj = "mqtt.0.BewaesserungsSteuerung.SoilMoistureSensor_01.BodenFeuchtigkeit_in_%";
+const BodenfeuchteSensorObj = "mqtt.0.Bewaesserungssteuerung.SoilMoistureSensor.Feuchtigkeit_in_Prozent";
 const BodenfeuchteGrenze = 60;
 
+const kreisGpio = {
+    "1": {
+        gpio: 5,
+        name: "RasenNaschtunnel"
+    },
+    "2": {
+        gpio: 4,
+        name: "RasenVorgarten"
+    },
+    "3": {
+        gpio: 0,
+        name: "BeetNaschtunnel"
+    },
+    "4": {
+        gpio: 2,
+        name: "Gewaechshau"
+    },
+    "5": {
+        gpio: 14,
+        name: "Rasen01"
+    },
+    "6": {
+        gpio: 12,
+        name: "Rasen02"
+    },
+    "7": {
+        gpio: 13,
+        name: "Blumenbeet"
+    },
+}
 
 /**
  * Steuerung der Bewässerungsanlage
  */
 function bewaesserungSteuerung(kreis, aktivieren) {
-  var gpio;
-  if (kreis == 1) {
-    gpio = 5
-  } else if (kreis == 2) {
-    gpio = 4
-  }
+  var gpio = kreisGpio[kreis].gpio;
 
   var status = 1;
   if (aktivieren) {
     status = 0
   }
 
+  const url = 'http://192.168.1.41/control?cmd=gpio,' + gpio + ',' + status
+
   try {
-    require("request")(('http://192.168.1.41/control?cmd=gpio,' + gpio + ',' + status)).on("error", function (e) {
+    require("request")((url)).on("error", function (e) {
       log("ERROR Request: " + e);
     // log("STATUS: Kreis " + kreis + "; Aktiviert: " +aktivieren);
     });
+    log("STATUS: Kreis " + kreis + "; Aktiviert: " +aktivieren + "; URL: " + url);
   } catch (e) {
     log("ERROR: " + e);
   }
@@ -50,16 +78,46 @@ function Felder_anlegen() {
   });
 
   createState('javascript.0.Bewaesserung.BewaesserungsdauerKreis1', 15, {
-    name: "BewaesserungsdauerKreis1"
+    name: "BewaesserungsdauerKreis1_RasenNaschtunnel"
   });
   createState('javascript.0.Bewaesserung.BewaesserungsdauerKreis2', 30, {
-    name: "BewaesserungsdauerKreis2"
+    name: "BewaesserungsdauerKreis2_RasenVorgarten"
+  });
+  createState('javascript.0.Bewaesserung.BewaesserungsdauerKreis3', 30, {
+    name: "BewaesserungsdauerKreis3_BeetNaschtunnel"
+  });
+  createState('javascript.0.Bewaesserung.BewaesserungsdauerKreis4', 30, {
+    name: "BewaesserungsdauerKreis4_Gewaechshaus"
+  });
+  createState('javascript.0.Bewaesserung.BewaesserungsdauerKreis5', 30, {
+    name: "BewaesserungsdauerKreis5_Rasen01"
+  });
+  createState('javascript.0.Bewaesserung.BewaesserungsdauerKreis6', 30, {
+    name: "BewaesserungsdauerKreis6_Rasen02"
+  });
+  createState('javascript.0.Bewaesserung.BewaesserungsdauerKreis7', 30, {
+    name: "BewaesserungsdauerKreis7_BlumenBeet"
   });
   createState('javascript.0.Bewaesserung.ManuelleBewaesserungsDauerKreis1', 10, {
     name: "ManuelleBewaesserungsDauerKreis1",
   });
   createState('javascript.0.Bewaesserung.ManuelleBewaesserungsDauerKreis2', 10, {
     name: "ManuelleBewaesserungsDauerKreis2",
+  });
+  createState('javascript.0.Bewaesserung.ManuelleBewaesserungsDauerKreis3', 10, {
+    name: "ManuelleBewaesserungsDauerKreis3",
+  });
+  createState('javascript.0.Bewaesserung.ManuelleBewaesserungsDauerKreis4', 10, {
+    name: "ManuelleBewaesserungsDauerKreis4",
+  });
+  createState('javascript.0.Bewaesserung.ManuelleBewaesserungsDauerKreis5', 10, {
+    name: "ManuelleBewaesserungsDauerKreis5",
+  });
+  createState('javascript.0.Bewaesserung.ManuelleBewaesserungsDauerKreis6', 10, {
+    name: "ManuelleBewaesserungsDauerKreis6",
+  });
+  createState('javascript.0.Bewaesserung.ManuelleBewaesserungsDauerKreis7', 10, {
+    name: "ManuelleBewaesserungsDauerKreis7",
   });
 
   createState('javascript.0.Bewaesserung.RestdauerIn%', 0, {
@@ -143,6 +201,7 @@ function Felder_anlegen() {
   createState('javascript.0.Bewaesserung.Tage.SonntagZeit2', {
     name: "SonntagZeit2"
   });
+
 
 }
 
@@ -319,6 +378,3 @@ on({
     bewaesserungSteuerung(2, false);
   }
 });
-
-
-

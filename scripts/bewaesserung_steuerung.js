@@ -1,380 +1,340 @@
-const BodenfeuchteSensorObj = "mqtt.0.Bewaesserungssteuerung.SoilMoistureSensor.Feuchtigkeit_in_Prozent";
-const BodenfeuchteGrenze = 60;
+const BodenfeuchteSensorObj = "mqtt.0.Bewaesserungssteuerung.SoilMoistureSensor.Feuchtigkeit_in_Prozent"
 
 const kreisGpio = {
-    "1": {
-        gpio: 5,
-        name: "RasenNaschtunnel"
-    },
-    "2": {
-        gpio: 4,
-        name: "RasenVorgarten"
-    },
-    "3": {
-        gpio: 0,
-        name: "BeetNaschtunnel"
-    },
-    "4": {
-        gpio: 2,
-        name: "Gewaechshau"
-    },
-    "5": {
-        gpio: 14,
-        name: "Rasen01"
-    },
-    "6": {
-        gpio: 12,
-        name: "Rasen02"
-    },
-    "7": {
-        gpio: 13,
-        name: "Blumenbeet"
-    },
+  1: {
+    gpio: 5,
+    name: "RasenNaschtunnel",
+  },
+  2: {
+    gpio: 4,
+    name: "RasenVorgarten",
+  },
+  3: {
+    gpio: 0,
+    name: "BeetNaschtunnel",
+  },
+  4: {
+    gpio: 2,
+    name: "Gewaechshau",
+  },
+  5: {
+    gpio: 14,
+    name: "Rasen01",
+  },
+  6: {
+    gpio: 12,
+    name: "Rasen02",
+  },
+  7: {
+    gpio: 13,
+    name: "Blumenbeet",
+  },
 }
 
 /**
- * Steuerung der Bewässerungsanlage
- */
-function bewaesserungSteuerung(kreis, aktivieren) {
-  var gpio = kreisGpio[kreis].gpio;
 
-  var status = 1;
+* Steuerung der Bewässerungsanlage
+
+*/
+
+function bewaesserungSteuerung(kreis, aktivieren) {
+  var gpio = kreisGpio[kreis].gpio
+
+  var status = 1
+
   if (aktivieren) {
     status = 0
   }
 
-  const url = 'http://192.168.1.41/control?cmd=gpio,' + gpio + ',' + status
+  const url = "http://192.168.1.41/control?cmd=gpio," + gpio + "," + status
 
   try {
-    require("request")((url)).on("error", function (e) {
-      log("ERROR Request: " + e);
-    // log("STATUS: Kreis " + kreis + "; Aktiviert: " +aktivieren);
-    });
-    log("STATUS: Kreis " + kreis + "; Aktiviert: " +aktivieren + "; URL: " + url);
+    require("request")(url).on("error", function (e) {
+      log("ERROR Request: " + e)
+
+      // log("STATUS: Kreis " + kreis + "; Aktiviert: " +aktivieren);
+    })
+
+    log("STATUS: Kreis " + kreis + "; Aktiviert: " + aktivieren + "; URL: " + url)
   } catch (e) {
-    log("ERROR: " + e);
+    log("ERROR: " + e)
   }
 }
-
-
-/**
- * Legt die Felder zum Speichern der Werte an
- */
-function Felder_anlegen() {
-  createState('javascript.0.Bewaesserung', {
-    name: "Bewaesserung"
-  });
-  createState('javascript.0.Bewaesserung.ManuelleBewaesserung', false, {
-    name: "ManuelleBewaesserung",
-    type: "boolean"
-  });
-  createState('javascript.0.Bewaesserung.AutomatischeBewaesserung', false, {
-    name: "AutomatischeBewaesserung",
-    type: "boolean"
-  });
-  createState('javascript.0.Bewaesserung.BewaesserungAktiv', false, {
-    name: "BewaesserungAktiv",
-    type: "boolean"
-  });
-
-  createState('javascript.0.Bewaesserung.BewaesserungsdauerKreis1', 15, {
-    name: "BewaesserungsdauerKreis1_RasenNaschtunnel"
-  });
-  createState('javascript.0.Bewaesserung.BewaesserungsdauerKreis2', 30, {
-    name: "BewaesserungsdauerKreis2_RasenVorgarten"
-  });
-  createState('javascript.0.Bewaesserung.BewaesserungsdauerKreis3', 30, {
-    name: "BewaesserungsdauerKreis3_BeetNaschtunnel"
-  });
-  createState('javascript.0.Bewaesserung.BewaesserungsdauerKreis4', 30, {
-    name: "BewaesserungsdauerKreis4_Gewaechshaus"
-  });
-  createState('javascript.0.Bewaesserung.BewaesserungsdauerKreis5', 30, {
-    name: "BewaesserungsdauerKreis5_Rasen01"
-  });
-  createState('javascript.0.Bewaesserung.BewaesserungsdauerKreis6', 30, {
-    name: "BewaesserungsdauerKreis6_Rasen02"
-  });
-  createState('javascript.0.Bewaesserung.BewaesserungsdauerKreis7', 30, {
-    name: "BewaesserungsdauerKreis7_BlumenBeet"
-  });
-  createState('javascript.0.Bewaesserung.ManuelleBewaesserungsDauerKreis1', 10, {
-    name: "ManuelleBewaesserungsDauerKreis1",
-  });
-  createState('javascript.0.Bewaesserung.ManuelleBewaesserungsDauerKreis2', 10, {
-    name: "ManuelleBewaesserungsDauerKreis2",
-  });
-  createState('javascript.0.Bewaesserung.ManuelleBewaesserungsDauerKreis3', 10, {
-    name: "ManuelleBewaesserungsDauerKreis3",
-  });
-  createState('javascript.0.Bewaesserung.ManuelleBewaesserungsDauerKreis4', 10, {
-    name: "ManuelleBewaesserungsDauerKreis4",
-  });
-  createState('javascript.0.Bewaesserung.ManuelleBewaesserungsDauerKreis5', 10, {
-    name: "ManuelleBewaesserungsDauerKreis5",
-  });
-  createState('javascript.0.Bewaesserung.ManuelleBewaesserungsDauerKreis6', 10, {
-    name: "ManuelleBewaesserungsDauerKreis6",
-  });
-  createState('javascript.0.Bewaesserung.ManuelleBewaesserungsDauerKreis7', 10, {
-    name: "ManuelleBewaesserungsDauerKreis7",
-  });
-
-  createState('javascript.0.Bewaesserung.RestdauerIn%', 0, {
-    name: "RestdauerIn%"
-  });
-  createState('javascript.0.Bewaesserung.RestdauerInMinuten', 0, {
-    name: "RestdauerInMinuten"
-  });
-  createState('javascript.0.Bewaesserung.Laufzaehler', 0, {
-    name: "Laufzaehler"
-  });
-
-  createState('javascript.0.Bewaesserung.Tage.Montag', false, {
-    name: "Montag",
-    type: "boolean"
-  });
-  createState('javascript.0.Bewaesserung.Tage.Dienstag', false, {
-    name: "Dienstag",
-    type: "boolean"
-  });
-  createState('javascript.0.Bewaesserung.Tage.Mittwoch', false, {
-    name: "Mittwoch",
-    type: "boolean"
-  });
-  createState('javascript.0.Bewaesserung.Tage.Donnerstag', false, {
-    name: "Donnerstag",
-    type: "boolean"
-  });
-  createState('javascript.0.Bewaesserung.Tage.Freitag', false, {
-    name: "Freitag",
-    type: "boolean"
-  });
-  createState('javascript.0.Bewaesserung.Tage.Samstag', false, {
-    name: "Samstag",
-    type: "boolean"
-  });
-  createState('javascript.0.Bewaesserung.Tage.Sonntag', false, {
-    name: "Sonntag",
-    type: "boolean"
-  });
-
-  createState('javascript.0.Bewaesserung.Tage.MontagZeit1', {
-    name: "MontagZeit1"
-  });
-  createState('javascript.0.Bewaesserung.Tage.MontagZeit2', {
-    name: "MontagZeit2"
-  });
-  createState('javascript.0.Bewaesserung.Tage.DienstagZeit1', {
-    name: "DienstagZeit1"
-  });
-  createState('javascript.0.Bewaesserung.Tage.DienstagZeit2', {
-    name: "DienstagZeit2"
-  });
-  createState('javascript.0.Bewaesserung.Tage.MittwochZeit1', {
-    name: "MittwochZeit1"
-  });
-  createState('javascript.0.Bewaesserung.Tage.MittwochZeit2', {
-    name: "MittwochZeit2"
-  });
-  createState('javascript.0.Bewaesserung.Tage.DonnerstagZeit1', {
-    name: "DonnerstagZeit1"
-  });
-  createState('javascript.0.Bewaesserung.Tage.DonnerstagZeit2', {
-    name: "DonnerstagZeit2"
-  });
-  createState('javascript.0.Bewaesserung.Tage.FreitagZeit1', {
-    name: "FreitagZeit1"
-  });
-  createState('javascript.0.Bewaesserung.Tage.FreitagZeit2', {
-    name: "FreitagZeit2"
-  });
-  createState('javascript.0.Bewaesserung.Tage.SamstagZeit1', {
-    name: "SamstagZeit1"
-  });
-  createState('javascript.0.Bewaesserung.Tage.SamstagZeit2', {
-    name: "SamstagZeit2"
-  });
-  createState('javascript.0.Bewaesserung.Tage.SonntagZeit1', {
-    name: "SonntagZeit1"
-  });
-  createState('javascript.0.Bewaesserung.Tage.SonntagZeit2', {
-    name: "SonntagZeit2"
-  });
-
-
-}
-
-
-Felder_anlegen();
-
-// Initiale States
-setState("javascript.0.Bewaesserung.ManuelleBewaesserung", false);
-setState("javascript.0.Bewaesserung.BewaesserungAktiv", false);
-setState("javascript.0.Bewaesserung.AutomatischeBewaesserung", false);
 
 function Telegram(message) {
   sendTo("telegram", "send", {
-    text: message
-  });
+    text: message,
+  })
 }
 
-var Abschaltautomatik, Einschaltzeitpunkt, timeout;
+/**
+
+* Legt die Felder zum Speichern der Werte an
+
+*/
+
+function Felder_anlegen() {
+  createState("Bewaesserung", {
+    name: "Bewaesserung",
+  })
+
+  createState("Bewaesserung.ManuelleBewaesserung", false, {
+    name: "ManuelleBewaesserung",
+
+    type: "boolean",
+  })
+
+  createState("Bewaesserung.AutomatischeBewaesserung", false, {
+    name: "AutomatischeBewaesserung",
+
+    type: "boolean",
+  })
+
+  createState("Bewaesserung.BewaesserungAktiv", false, {
+    name: "BewaesserungAktiv",
+
+    type: "boolean",
+  })
+
+  createState("Bewaesserung.BodenfeuchteGrenze", 60, {
+    name: "BodenfeuchteGrenze",
+  })
+
+  // Kreise
+
+  Object.entries(kreisGpio).forEach(([key, value]) => {
+    createState("Bewaesserung.BewaesserungsdauerKreis" + key, 15, {
+      name: "BewaesserungsdauerKreis" + key + "_" + value.name,
+    })
+
+    createState("Bewaesserung.ManuelleBewaesserungsDauerKreis" + key, 10, {
+      name: "ManuelleBewaesserungsDauerKreis" + key + "_" + value.name,
+    })
+  })
+
+  // Tage
+
+  const days = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"]
+
+  days.forEach((day) => {
+    createState("Bewaesserung.Tage." + day, false, {
+      name: day,
+
+      type: "boolean",
+    })
+
+    createState("Bewaesserung.Tage." + day + "Zeit1", {
+      name: day + "Zeit1",
+    })
+
+    createState("Bewaesserung.Tage." + day + "Zeit2", {
+      name: day + "Zeit2",
+    })
+  })
+
+  // Restdauern
+
+  createState("Bewaesserung.RestdauerIn%", 0, {
+    name: "RestdauerIn%",
+  })
+
+  createState("Bewaesserung.RestdauerInMinuten", 0, {
+    name: "RestdauerInMinuten",
+  })
+
+  createState("Bewaesserung.Laufzaehler", 0, {
+    name: "Laufzaehler",
+  })
+}
+
+Felder_anlegen()
+
+// Initiale States
+
+setState("Bewaesserung.ManuelleBewaesserung", false)
+
+setState("Bewaesserung.BewaesserungAktiv", false)
+
+setState("Bewaesserung.AutomatischeBewaesserung", false)
+
+var Abschaltautomatik, Einschaltzeitpunkt, timeout
 
 // Einschaltzeitpunkt finden
-Einschaltzeitpunkt = schedule('* * * * * *', function () {
-
+Einschaltzeitpunkt = schedule("* * * * * *", function () {
   // Wenn Automatische Bewässerung aktiv und Manuelle Bewässerung nicht aktiv
-  if (getState("javascript.0.Bewaesserung.ManuelleBewaesserung").val == false && getState("javascript.0.Bewaesserung.AutomatischeBewaesserung").val == true) {
-
-    var actualDay = formatDate(new Date(), "WW", "de");
-    var dayEnabled = getState("javascript.0.Bewaesserung.Tage." + actualDay).val;
+  if (
+    getState("Bewaesserung.ManuelleBewaesserung").val == false &&
+    getState("Bewaesserung.AutomatischeBewaesserung").val == true
+  ) {
+    var actualDay = formatDate(new Date(), "WW", "de")
+    var dayEnabled = getState("Bewaesserung.Tage." + actualDay).val
 
     if (dayEnabled) {
       var actualTime = formatDate(new Date(), "hh:mm:ss")
-      var time1 = getState("javascript.0.Bewaesserung.Tage." + actualDay + "Zeit1").val;
-      var time2 = getState("javascript.0.Bewaesserung.Tage." + actualDay + "Zeit2").val
+      var time1 = getState("Bewaesserung.Tage." + actualDay + "Zeit1").val
+      var time2 = getState("Bewaesserung.Tage." + actualDay + "Zeit2").val
 
       if (time1 == actualTime || time2 == actualTime) {
         // Bewässerung starten
-
-        if (getState(BodenfeuchteSensorObj).val <= BodenfeuchteGrenze) {
-          setState("javascript.0.Bewaesserung.BewaesserungAktiv", true, true);
-          bewaesserungSteuerung(1, true);
-          Telegram("Bewässerung wird gestartet");
+        if (getState(BodenfeuchteSensorObj).val <= getState(BodenfeuchteGrenze).val) {
+          setState("Bewaesserung.BewaesserungAktiv", true, true)
+          bewaesserungSteuerung(1, true)
+          Telegram("Bewässerung wird gestartet")
         } else {
-          Telegram("Bodenfeuchtigkeit zu hoch. Bewässerung wird ausgesetzt.");
+          Telegram("Bodenfeuchtigkeit zu hoch. Bewässerung wird ausgesetzt.")
         }
       }
     }
-
   }
-});
-
+})
 
 // Abschalten nach festgelegter Zeit
-on({
-  id: 'javascript.0.Bewaesserung.BewaesserungAktiv',
-  change: "ne"
-}, function (obj) {
-  var value = obj.state.val;
-  var oldValue = obj.oldState.val;
+on(
+  {
+    id: "Bewaesserung.BewaesserungAktiv",
+    change: "ne",
+  },
+  function (obj) {
+    var value = obj.state.val
+    var oldValue = obj.oldState.val
 
-  // Wenn Bewässerung aktiv
-  if (value == true) {
-    setState("javascript.0.Bewaesserung.Laufzaehler", 0);
-    setState("javascript.0.Bewaesserung.RestdauerIn%", 0);
+    // Wenn Bewässerung aktiv
+    if (value == true) {
+      setState("Bewaesserung.Laufzaehler", 0)
+      setState("Bewaesserung.RestdauerIn%", 100)
 
-    // Dauer automatische Bewässerung
-    var dauerKreis1 = parseInt(getState("javascript.0.Bewaesserung.BewaesserungsdauerKreis1").val);
-    var dauerKreis2 = parseInt(getState("javascript.0.Bewaesserung.BewaesserungsdauerKreis2").val);
+      // Dauer automatische Bewässerung
+      var dauerKreise = {}
+      var bewaesserungsdauerSumme = 0
 
-    // Dauer wenn manuell bewässert wird
-    var manuell = getState("javascript.0.Bewaesserung.ManuelleBewaesserung").val
-    if (manuell) {
-      dauerKreis1 = parseInt(getState("javascript.0.Bewaesserung.ManuelleBewaesserungsDauerKreis1").val);
-      dauerKreis2 = parseInt(getState("javascript.0.Bewaesserung.ManuelleBewaesserungsDauerKreis2").val);
-    }
+      var manuell = getState("Bewaesserung.ManuelleBewaesserung").val
+      if (manuell) {
+        // Dauer wenn manuell bewässert wird
+        Object.entries(kreisGpio).forEach(([key, value]) => {
+          var dauer = parseInt(getState("Bewaesserung.ManuelleBewaesserungsDauerKreis" + key).val)
 
-    var bewaesserungsdauerSumme = dauerKreis1 + dauerKreis2;
-    setState("javascript.0.Bewaesserung.RestdauerInMinuten", bewaesserungsdauerSumme);
+          if (dauer > 0) {
+            dauerKreise[key] = dauer
+            bewaesserungsdauerSumme += dauer
+          }
+        })
+      } else {
+        // Dauer bei automatischer Bewässerung
+        Object.entries(kreisGpio).forEach(([key, value]) => {
+          var dauer = parseInt(getState("Bewaesserung.BewaesserungsdauerKreis" + key).val)
 
-    // Jede Minute
-    Abschaltautomatik = schedule('* * * * *', function () {
-        var Laufzähler = getState("javascript.0.Bewaesserung.Laufzaehler").val
+          if (dauer > 0) {
+            dauerKreise[key] = dauer
+            bewaesserungsdauerSumme += dauer
+          }
+        })
+      }
 
-        log("Laufzähler - " + Laufzähler + " min");
-        
+      setState("Bewaesserung.RestdauerInMinuten", bewaesserungsdauerSumme)
 
-        // Ende Kreis 2 // Teil 2
-        if (Laufzähler >= bewaesserungsdauerSumme) {
-            bewaesserungSteuerung(2, false);
-            log("Kreis 2 - Teil 2 aus");
+      // Abschaltpunkte suchen
+      var abschaltpunkte = []
+      var abschaltDauer = 0
 
-            setState("javascript.0.Bewaesserung.BewaesserungAktiv", false);
+      Object.entries(dauerKreise).forEach(([kreis, dauer]) => {
+        abschaltDauer += dauer / 2
+        abschaltpunkte.push([abschaltDauer, kreis, 1])
+      })
+      Object.entries(dauerKreise).forEach(([kreis, dauer]) => {
+        abschaltDauer += dauer / 2
+        abschaltpunkte.push([abschaltDauer, kreis, 2])
+      })
+
+      // Jede Minute
+      Abschaltautomatik = schedule("* * * * *", function () {
+        var Laufzähler = getState("Bewaesserung.Laufzaehler").val
+
+        log("Laufzähler - " + Laufzähler + " min")
+
+        var aktuellerKreis = 0
+
+        // Start erster Kreis
+        bewaesserungSteuerung(abschaltpunkte[0][1], true)
+
+        var abschaltzeit = abschaltpunkte[0][0]
+        var kreis = abschaltpunkte[0][1]
+        var teil = abschaltpunkte[0][2]
+
+        if (Laufzähler == abschaltzeit) {
+          // Beendet aktuell aktiven Kreis
+          bewaesserungSteuerung(kreis, false)
+          log("Kreis " + kreis + " - " + kreisGpio[kreis].name + " - Teil " + teil + " - beendet")
+
+          // Lösche beendeten Kreis aus array
+          abschaltpunkte.shift()
+
+          if (abschaltpunkte.length > 0) {
+            abschaltzeit = abschaltpunkte[0][0]
+            kreis = abschaltpunkte[0][1]
+            teil = abschaltpunkte[0][2]
+            bewaesserungSteuerung(kreis, true)
+            log("Kreis " + kreis + " - " + kreisGpio[kreis].name + " - Teil " + teil + " - gestartet")
+          } else {
+            // Alle Kreise beendet
+            setState("Bewaesserung.BewaesserungAktiv", false)
 
             if (manuell) {
-                setState("javascript.0.Bewaesserung.ManuelleBewaesserung", false);
-                Telegram("Manuelle Bewässerung wurde beendet");
+              setState("Bewaesserung.ManuelleBewaesserung", false)
+              log("Manuelle Bewässerung wurde beendet")
+              Telegram("Manuelle Bewässerung wurde beendet")
             } else {
-                Telegram("Bewässerung wurde beendet");
+              log("Bewässerung wurde beendet")
+              Telegram("Bewässerung wurde beendet")
             }
-        }
-        // Ende Kreis 1 // Teil 2
-        else if (Laufzähler >= dauerKreis1 + (dauerKreis2 / 2)) {
-            bewaesserungSteuerung(1, false);
-            bewaesserungSteuerung(2, true);
-            log("Kreis 1 - Teil 2 aus");
-        }
-        // Ende Kreis 2 // Teil 1
-        else if (Laufzähler >= ((dauerKreis1 / 2) + (dauerKreis2 / 2)) ) {
-            bewaesserungSteuerung(2, false);
-            bewaesserungSteuerung(1, true);
-            log("Kreis 2 - Teil 1 aus");
-        }
-        // Ende Kreis 1 // Teil 1
-        else if (Laufzähler >= dauerKreis1 / 2) {
-            bewaesserungSteuerung(1, false);
-            bewaesserungSteuerung(2, true);
-            log("Kreis 1 - Teil 1 aus");
+          }
         }
 
         // Noch kein Ende
-        if (getState("javascript.0.Bewaesserung.Laufzaehler").val < bewaesserungsdauerSumme) {
+        var laufzaehler = parseInt(getState("Bewaesserung.Laufzaehler").val)
+        if (laufzaehler < bewaesserungsdauerSumme) {
+          setState("Bewaesserung.Laufzaehler", laufzaehler + 1, true)
+          setState("Bewaesserung.RestdauerInMinuten", getState("Bewaesserung.RestdauerInMinuten").val - 1, true)
 
-            setState("javascript.0.Bewaesserung.Laufzaehler", (getState("javascript.0.Bewaesserung.Laufzaehler").val + 1), true);
-            setState("javascript.0.Bewaesserung.RestdauerInMinuten", (getState("javascript.0.Bewaesserung.RestdauerInMinuten").val - 1), true);
-
-            // timeout = setTimeout(function () {
-            // log("PROZENT: " + ((parseInt(getState("javascript.0.Bewaesserung.Laufzaehler").val) + 1) / bewaesserungsdauerSumme) * 100);
-            setState("javascript.0.Bewaesserung.RestdauerIn%", (((parseInt(getState("javascript.0.Bewaesserung.Laufzaehler").val) +1) / bewaesserungsdauerSumme) * 100), true);
-            // }, 1000);
+          setState("Bewaesserung.RestdauerIn%", (laufzaehler / bewaesserungsdauerSumme) * 100, true)
         }
-    });
-
-  }
-  // Bewässerung nicht aktiv
-  else {
-    (function () {
-      if (Abschaltautomatik) {
-        clearSchedule(Abschaltautomatik);
-        Abschaltautomatik = null;
-      }
-    })();
-
-    setState("javascript.0.Bewaesserung.Laufzähler", 0, true);
-    setState("javascript.0.Bewaesserung.RestdauerIn%", 0, true);
-    setState("javascript.0.Bewaesserung.RestdauerInMinuten", 0, true);
-  }
-});
-
-
-// Manuelle Bewässerung
-on({
-  id: 'javascript.0.Bewaesserung.ManuelleBewaesserung',
-  change: "ne"
-}, function (obj) {
-  var value = obj.state.val;
-  var oldValue = obj.oldState.val;
-
-  // Manuelle Bewässerung wurde aktiviert
-  if (value == true) {
-    setState("javascript.0.Bewaesserung.BewaesserungAktiv", true);
-
-    if (getState("javascript.0.Bewaesserung.ManuelleBewaesserungsDauerKreis1").val > 0) {
-      bewaesserungSteuerung(1, true);
-      Telegram("Manuelle Bewässerung wird gestartet");
-    } else if (getState("javascript.0.Bewaesserung.ManuelleBewaesserungsDauerKreis2").val > 0) {
-      bewaesserungSteuerung(2, true);
-      Telegram("Manuelle Bewässerung wird gestartet");
+      })
     } else {
-      Telegram("Keine Dauer für Manuelle Bewässerung");
+      // Bewässerung nicht aktiv
+      ;(function () {
+        if (Abschaltautomatik) {
+          clearSchedule(Abschaltautomatik)
+          Abschaltautomatik = null
+        }
+      })()
+
+      setState("Bewaesserung.Laufzähler", 0, true)
+      setState("Bewaesserung.RestdauerIn%", 0, true)
+      setState("Bewaesserung.RestdauerInMinuten", 0, true)
     }
   }
-  // Manuelle Bewässerung wurde deaktiviert
-  else {
-    setState("javascript.0.Bewaesserung.BewaesserungAktiv", false);
-    bewaesserungSteuerung(1, false);
-    bewaesserungSteuerung(2, false);
+)
+
+// Manuelle Bewässerung
+on(
+  {
+    id: "Bewaesserung.ManuelleBewaesserung",
+    change: "ne",
+  },
+  function (obj) {
+    var value = obj.state.val
+    var oldValue = obj.oldState.val
+
+    // Manuelle Bewässerung wurde aktiviert
+    if (value == true) {
+      setState("Bewaesserung.BewaesserungAktiv", true)
+    }
+    // Manuelle Bewässerung wurde deaktiviert
+    else {
+      setState("Bewaesserung.BewaesserungAktiv", false)
+
+      Object.entries(kreisGpio).forEach(([key, value]) => {
+        bewaesserungSteuerung(key, false)
+      })
+    }
   }
-});
+)
